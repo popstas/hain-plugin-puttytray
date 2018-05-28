@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "properties": {
+        "puttyTrayDirectory": {
+            "type": "string",
+            "title": "Path to PuttyTray directory"
+        },
+        "lastSelectedLimit": {
+            "type": "string",
+            "title": "MRU list limit",
+            "default": "5"
+        }
+    }
+}

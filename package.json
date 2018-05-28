@@ -1,0 +1,30 @@
+{
+  "name": "hain-plugin-puttytray",
+  "version": "0.1.0",
+  "description": "A Hain plugin to launch PuTTYtray sessions from file storage",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/popstas/hain-plugin-puttytray.git"
+  },
+  "keywords": [
+    "hain-0.6.0",
+    "hain-plugin",
+    "puttytray"
+  ],
+  "author": "Stanislav Popov <popstas@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/popstas/hain-plugin-puttytray/issues"
+  },
+  "homepage": "https://github.com/popstas/hain-plugin-puttytray#readme",
+  "hain": {
+    "prefix": "/ssh",
+    "usage": "/ssh my.remoteserver.com",
+    "redirect": "/ssh ",
+    "icon": "#fa fa-chevron-right"
+  }
+}
