@@ -26,5 +26,8 @@
     "usage": "/ssh my.remoteserver.com",
     "redirect": "/ssh ",
     "icon": "#fa fa-chevron-right"
+  },
+  "dependencies": {
+    "fuse.js": "^3.2.0"
   }
 }

@@ -4,6 +4,7 @@ A Hain plugin to launch PuTTYtray sessions from file storage.
 ## Features
 - Read sessions from file storage
 - MRU list
+- Fuzzy search
 
 ## Requirements
 Open preferences and define PuTTYtray directory.

@@ -9,6 +9,7 @@ module.exports = (pluginContext) => {
 
   const exec = require('child_process').exec;
   const fs = require('fs');
+  const Fuse = require('fuse.js');
 
   // preferences
   let puttyTrayDirectory;
@@ -17,6 +18,7 @@ module.exports = (pluginContext) => {
   let storedSessions = [];
   let lastSelected = localStorage.getItem('lastSelected') || [];
   let isError = false;
+  let fuse;
 
   function onPrefsUpdate(prefs){
     puttyTrayDirectory = prefs.puttyTrayDirectory;
@@ -45,7 +47,18 @@ module.exports = (pluginContext) => {
       .filter(name => name != 'Default Settings')
 
     storedSessions.sort();
-    logger.log('putty sessions: ' + storedSessions);
+
+    let storedSessionsObjects = storedSessions.map(name => {
+      return { name };
+    });
+    // logger.log('storedSessionsObjects', storedSessionsObjects);
+    fuse = new Fuse(storedSessionsObjects, {
+      keys: ['name'],
+      threshold: 0.3,
+      location: 4,
+    });
+
+    logger.log('putty sessions: ', storedSessions);
     isError = false;
   }
 
@@ -81,11 +94,17 @@ module.exports = (pluginContext) => {
     }
 
     // filter
-    const sessions = [].concat(
+    /* const sessions = [].concat(
       lastSelected,
       storedSessions.filter(session => lastSelected.indexOf(session) == -1)
     );
     const filtered = sessions.filter(session => session.toLowerCase().search(query) >= 0);
+    logger.log('filtered', sessions); */
+    const filteredLast = lastSelected.filter(session => session.toLowerCase().search(query) >= 0);
+    const found = fuse.search(query).map(item => { return item.name });
+    logger.log('found', found);
+    const filtered = filteredLast.concat(found);
+    logger.log('filtered', filteredLast.concat(found));
 
     // add results
     filtered.forEach(session => {
