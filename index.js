@@ -1,10 +1,10 @@
 'use strict';
 
-module.exports = (pluginContext) => {
+module.exports = pluginContext => {
   const pluginName = 'puttytray';
   const shell = pluginContext.shell;
   const logger = pluginContext.logger;
-  const localStorage  = pluginContext.localStorage ;
+  const localStorage = pluginContext.localStorage;
   const preferences = pluginContext.preferences;
 
   const exec = require('child_process').exec;
@@ -20,7 +20,7 @@ module.exports = (pluginContext) => {
   let isError = false;
   let fuse;
 
-  function onPrefsUpdate(prefs){
+  function onPrefsUpdate(prefs) {
     puttyTrayDirectory = prefs.puttyTrayDirectory;
     lastSelectedLimit = prefs.lastSelectedLimit;
     loadPuttyTraySessions();
@@ -30,21 +30,22 @@ module.exports = (pluginContext) => {
     logger.log('loading Putty sessions...');
     let sessionsDirectory = puttyTrayDirectory + '\\Sessions';
 
-    if(!puttyTrayDirectory){
+    if (!puttyTrayDirectory) {
       storedSessions = ['Please, define path to PuTTYtray directory'];
       isError = true;
       return false;
     }
-    if(!fs.existsSync(sessionsDirectory)){
+    if (!fs.existsSync(sessionsDirectory)) {
       storedSessions = [sessionsDirectory + ' not exists'];
       isError = true;
       return false;
     }
 
-    storedSessions = fs.readdirSync(sessionsDirectory)
+    storedSessions = fs
+      .readdirSync(sessionsDirectory)
       .map(file => decodeURI(file)) // %20 to space
       .filter(name => name != 'WinSCP temporary session')
-      .filter(name => name != 'Default Settings')
+      .filter(name => name != 'Default Settings');
 
     storedSessions.sort();
 
@@ -55,7 +56,7 @@ module.exports = (pluginContext) => {
     fuse = new Fuse(storedSessionsObjects, {
       keys: ['name'],
       threshold: 0.3,
-      location: 4,
+      location: 4
     });
 
     logger.log('putty sessions: ', storedSessions);
@@ -73,7 +74,7 @@ module.exports = (pluginContext) => {
     const isQuery = query.length > 0;
 
     // MRU
-    if(!isQuery && lastSelected.length > 0){
+    if (!isQuery && lastSelected.length > 0) {
       // logger.log(lastSelected);
       lastSelected.forEach(session => {
         res.add({
@@ -101,7 +102,9 @@ module.exports = (pluginContext) => {
     const filtered = sessions.filter(session => session.toLowerCase().search(query) >= 0);
     logger.log('filtered', sessions); */
     const filteredLast = lastSelected.filter(session => session.toLowerCase().search(query) >= 0);
-    const found = fuse.search(query).map(item => { return item.name });
+    const found = fuse.search(query).map(item => {
+      return item.name;
+    });
     logger.log('found', found);
     const filtered = filteredLast.concat(found);
     logger.log('filtered', filteredLast.concat(found));
@@ -117,10 +120,10 @@ module.exports = (pluginContext) => {
     });
 
     // add putty "query"
-    if(filtered.length == 0 && isQuery){
+    if (filtered.length == 0 && isQuery) {
       res.add({
         id: 'q',
-        title: isQuery ? 'putty.exe ' + query  : query,
+        title: isQuery ? 'putty.exe ' + query : query,
         payload: query,
         icon: '#fa fa-chevron-right'
       });
@@ -143,19 +146,19 @@ module.exports = (pluginContext) => {
     });
   }
 
-  function updateLastSelected(payload){
+  function updateLastSelected(payload) {
     const limit = parseInt(lastSelectedLimit);
 
-    if(!payload){
+    if (!payload) {
       return;
     }
 
     lastSelected = lastSelected
       .filter(session => session != payload) // remove duplicate
-      .filter(session => storedSessions.indexOf(session) != -1) // remove old values
+      .filter(session => storedSessions.indexOf(session) != -1); // remove old values
 
-    lastSelected.unshift(payload) // add new session
-    lastSelected = lastSelected.slice(0, limit) // limit
+    lastSelected.unshift(payload); // add new session
+    lastSelected = lastSelected.slice(0, limit); // limit
     localStorage.setItem('lastSelected', lastSelected);
   }
 
@@ -165,21 +168,21 @@ module.exports = (pluginContext) => {
         if (payload.trim().length > 0) {
           exec(`START ${puttyTrayDirectory}\\putty.exe ${payload}`);
         }
-      break;
+        break;
 
       case 'session':
         updateLastSelected(payload);
         logger.log(`START ${puttyTrayDirectory}\\putty.exe "${payload}"`);
         exec(`START ${puttyTrayDirectory}\\putty.exe -load "${payload}"`);
-      break;
+        break;
 
       case 'reload':
         loadPuttyTraySessions();
-      break;
+        break;
 
       case 'prefs':
         pluginContext.app.openPreferences('hain-plugin-' + pluginName);
-      break;
+        break;
     }
   }
 
