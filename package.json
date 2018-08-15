@@ -11,6 +11,7 @@
     "url": "git+https://github.com/popstas/hain-plugin-puttytray.git"
   },
   "keywords": [
+    "hain-0.5.0",
     "hain-0.6.0",
     "hain-plugin",
     "puttytray"
